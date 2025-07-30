@@ -75,51 +75,173 @@ The script will create a predefined set of subdirectories within `StabilityMatri
 After running the script with `-LiveRun`, your `StabilityMatrix\Data\Models\` directory will have a structure similar to this (only showing relevant parts for brevity):
 ```
 StabilityMatrix/
-├── Data/
-│   ├── Models/
-│   │   ├── StableDiffusion/  <-- Main Checkpoints
-│   │   │   ├── SD15/
-│   │   │   ├── SDXL/
-│   │   │   ├── Pony/
-│   │   │   ├── Illustrious/
-│   │   │   ├── NooB_AI/
-│   │   │   ├── WAN/
-│   │   │   │   ├── I2V/      <-- WAN Checkpoints (Image-to-Video)
-│   │   │   │   └── T2V/      <-- WAN Checkpoints (Text-to-Video)
-│   │   │   ├── Hunyuan/
-│   │   │   │   ├── I2V/      <-- Hunyuan Checkpoints (Image-to-Video)
-│   │   │   │   └── T2V/      <-- Hunyuan Checkpoints (Text-to-Video)
-│   │   │   ├── Flux/
-│   │   │   └── Unsorted/     <-- For Checkpoints that don't fit a category
-│   │   ├── Lora/             <-- LoRAs
-│   │   │   ├── SD15/
-│   │   │   │   ├── Characters/
-│   │   │   │   ├── Concepts/
-│   │   │   │   ├── Styles/
-│   │   │   │   ├── Motion/
-│   │   │   │   ├── Behaviors/  <-- Character-specific movements
-│   │   │   │   ├── Utility_Enhancers/
-│   │   │   │   └── Other/
-│   │   │   ├── SDXL/
-│   │   │   │   ├── Characters/
-│   │   │   │   ├── Concepts/
-│   │   │   │   ├── Styles/
-│   │   │   │   ├── Motion/
+├── models/
+│   ├── StableDiffusion/  <-- Main Checkpoints
+│   │   ├── Flux/
+│   │   ├── Hunyuan/
+│   │   │   ├── I2V/      <-- Hunyuan Checkpoints (Image-to-Video)
+│   │   │   ├── T2V/      <-- Hunyuan Checkpoints (Text-to-Video)
+│   │   │   └── Combination/  <-- Hunyuan Checkpoints (I2V/T2V Combination)
+│   │   ├── Illustrious/
+│   │   ├── NooB_AI/
+│   │   ├── Pony/
+│   │   ├── SD15/
+│   │   ├── SD2x/
+│   │   ├── SDXL/
+│   │   ├── SSD1B/
+│   │   ├── SVD/
+│   │   │   ├── I2V/      <-- SVD Checkpoints (Image-to-Video)
+│   │   │   ├── T2V/      <-- SVD Checkpoints (Text-to-Video)
+│   │   │   └── Combination/  <-- SVD Checkpoints (I2V/T2V Combination)
+│   │   ├── WAN/
+│   │   │   ├── I2V/      <-- WAN Checkpoints (Image-to-Video)
+│   │   │   ├── T2V/      <-- WAN Checkpoints (Text-to-Video)
+│   │   │   └── Combination/  <-- WAN Checkpoints (I2V/T2V Combination)
+│   │   └── Unsorted/     <-- For Checkpoints that don't fit a category
+│   ├── Lora/             <-- LoRAs
+│   │   ├── Flux/
+│   │   │   ├── Behaviors/
+│   │   │   ├── Characters/
+│   │   │   ├── Concepts/
+│   │   │   ├── Motion/
+│   │   │   ├── Styles/
+│   │   │   ├── Tools/
+│   │   │   └── Other/
+│   │   ├── Hunyuan/
+│   │   │   ├── I2V/
 │   │   │   │   ├── Behaviors/
-│   │   │   │   ├── Utility_Enhancers/
-│   │   │   │   └── Other/
-│   │   │   ├── WAN/
 │   │   │   │   ├── Characters/
 │   │   │   │   ├── Concepts/
-│   │   │   │   ├── Styles/
 │   │   │   │   ├── Motion/
-│   │   │   │   ├── Behaviors/
-│   │   │   │   ├── Utility_Enhancers/
+│   │   │   │   ├── Styles/
+│   │   │   │   ├── Tools/
 │   │   │   │   └── Other/
-│   │   │   # ... (similar detailed subfolders for Pony, Illustrious, NooB_AI, Hunyuan, Flux LoRAs)
-│   │   │   └── Unsorted/     <-- For LoRAs that don't fit a base model type
-│   │   ├── VAE/
-│   │   ├── CLIP/
-│   │   ├── TextEncoders/
-│   │   └── (other model type folders like ControlNet, embeddings, etc.)
+│   │   │   ├── T2V/
+│   │   │   │   ├── Behaviors/
+│   │   │   │   ├── Characters/
+│   │   │   │   ├── Concepts/
+│   │   │   │   ├── Motion/
+│   │   │   │   ├── Styles/
+│   │   │   │   ├── Tools/
+│   │   │   │   └── Other/
+│   │   │   └── Combination/
+│   │   │       ├── Behaviors/
+│   │   │       ├── Characters/
+│   │   │       ├── Concepts/
+│   │   │       ├── Motion/
+│   │   │       ├── Styles/
+│   │   │       ├── Tools/
+│   │   │       └── Other/
+│   │   ├── Illustrious/
+│   │   │   ├── Behaviors/
+│   │   │   ├── Characters/
+│   │   │   ├── Concepts/
+│   │   │   ├── Motion/
+│   │   │   ├── Styles/
+│   │   │   ├── Tools/
+│   │   │   └── Other/
+│   │   ├── NooB_AI/
+│   │   │   ├── Behaviors/
+│   │   │   ├── Characters/
+│   │   │   ├── Concepts/
+│   │   │   ├── Motion/
+│   │   │   ├── Styles/
+│   │   │   ├── Tools/
+│   │   │   └── Other/
+│   │   ├── Pony/
+│   │   │   ├── Behaviors/
+│   │   │   ├── Characters/
+│   │   │   ├── Concepts/
+│   │   │   ├── Motion/
+│   │   │   ├── Styles/
+│   │   │   ├── Tools/
+│   │   │   └── Other/
+│   │   ├── SD15/
+│   │   │   ├── Behaviors/
+│   │   │   ├── Characters/
+│   │   │   ├── Concepts/
+│   │   │   ├── Motion/
+│   │   │   ├── Styles/
+│   │   │   ├── Tools/
+│   │   │   └── Other/
+│   │   ├── SD2x/
+│   │   │   ├── Behaviors/
+│   │   │   ├── Characters/
+│   │   │   ├── Concepts/
+│   │   │   ├── Motion/
+│   │   │   ├── Styles/
+│   │   │   ├── Tools/
+│   │   │   └── Other/
+│   │   ├── SDXL/
+│   │   │   ├── Behaviors/
+│   │   │   ├── Characters/
+│   │   │   ├── Concepts/
+│   │   │   ├── Motion/
+│   │   │   ├── Styles/
+│   │   │   ├── Tools/
+│   │   │   └── Other/
+│   │   ├── SSD1B/
+│   │   │   ├── Behaviors/
+│   │   │   ├── Characters/
+│   │   │   ├── Concepts/
+│   │   │   ├── Motion/
+│   │   │   ├── Styles/
+│   │   │   ├── Tools/
+│   │   │   └── Other/
+│   │   ├── SVD/
+│   │   │   ├── I2V/
+│   │   │   │   ├── Behaviors/
+│   │   │   │   ├── Characters/
+│   │   │   │   ├── Concepts/
+│   │   │   │   ├── Motion/
+│   │   │   │   ├── Styles/
+│   │   │   │   ├── Tools/
+│   │   │   │   └── Other/
+│   │   │   ├── T2V/
+│   │   │   │   ├── Behaviors/
+│   │   │   │   ├── Characters/
+│   │   │   │   ├── Concepts/
+│   │   │   │   ├── Motion/
+│   │   │   │   ├── Styles/
+│   │   │   │   ├── Tools/
+│   │   │   │   └── Other/
+│   │   │   └── Combination/
+│   │   │       ├── Behaviors/
+│   │   │       ├── Characters/
+│   │   │       ├── Concepts/
+│   │   │       ├── Motion/
+│   │   │       ├── Styles/
+│   │   │       ├── Tools/
+│   │   │       └── Other/
+│   │   ├── WAN/
+│   │   │   ├── I2V/
+│   │   │   │   ├── Behaviors/
+│   │   │   │   ├── Characters/
+│   │   │   │   ├── Concepts/
+│   │   │   │   ├── Motion/
+│   │   │   │   ├── Styles/
+│   │   │   │   ├── Tools/
+│   │   │   │   └── Other/
+│   │   │   ├── T2V/
+│   │   │   │   ├── Behaviors/
+│   │   │   │   ├── Characters/
+│   │   │   │   ├── Concepts/
+│   │   │   │   ├── Motion/
+│   │   │   │   ├── Styles/
+│   │   │   │   ├── Tools/
+│   │   │   │   └── Other/
+│   │   │   └── Combination/
+│   │   │       ├── Behaviors/
+│   │   │       ├── Characters/
+│   │   │       ├── Concepts/
+│   │   │       ├── Motion/
+│   │   │       ├── Styles/
+│   │   │       ├── Tools/
+│   │   │       └── Other/
+│   │   └── Unsorted/     <-- For LoRAs that don't fit a base model type
+│   ├── VAE/
+│   ├── CLIP/
+│   ├── TextEncoders/
+│   └── (other model type folders like ControlNet, embeddings, etc.)
+
 ```
