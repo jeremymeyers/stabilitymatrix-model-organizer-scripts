@@ -8,7 +8,7 @@
 
     If the -Models, -Categories, or -CustomLoraCategories parameters are provided, it will create specific subfolders
     for the selected base model types and LoRA subcategories.
-    For WAN, Hunyuan, and SVD checkpoints, it adds further 'I2V' and 'T2V' subdivisions.
+    For WAN, Hunyuan, and SVD checkpoints, it adds further 'I2V', 'T2V', and 'Combination' subdivisions.
     For LoRAs, it creates nested subfolders (e.g., 'Character', 'Style', 'Motion', 'Behaviors') within each selected base model type folder.
 
     If no parameters are provided, the script will display instructions and then guide the user through an interactive menu.
@@ -48,7 +48,7 @@
 
 .NOTES
     Author: Gemini (Google)
-    Version: 9.4
+    Version: 9.5
     Date: 2025-07-29
     This script only creates directories and does not affect existing files until confirmed by the user.
     Remember to manually sort your files into these new subfolders.
@@ -318,9 +318,9 @@ function Perform-FolderCreation {
         $targetPath = Join-Path -Path $StableDiffusionDir -ChildPath $folderName
         $proposedPaths += $targetPath # Always add to list for dry run
 
-        # Special handling for WAN, Hunyuan, and SVD to add I2V/T2V subfolders
+        # Special handling for WAN, Hunyuan, and SVD to add I2V/T2V/Combination subfolders
         if ($folderName -eq "WAN" -or $folderName -eq "Hunyuan" -or $folderName -eq "SVD") {
-            $videoSubTypes = @("I2V", "T2V")
+            $videoSubTypes = @("I2V", "T2V", "Combination") # Added Combination
             foreach ($subType in $videoSubTypes) {
                 $subTargetPath = Join-Path -Path $targetPath -ChildPath $subType
                 $proposedPaths += $subTargetPath # Always add to list for dry run
@@ -337,10 +337,25 @@ function Perform-FolderCreation {
         $baseTypeLoraPath = Join-Path -Path $LoraDir -ChildPath $baseType
         $proposedPaths += $baseTypeLoraPath # Always add to list for dry run
 
-        # Now create the sub-categories within each base type LoRA folder
-        foreach ($subCategory in $LoraSubCategories) {
-            $targetPath = Join-Path -Path $baseTypeLoraPath -ChildPath $subCategory
-            $proposedPaths += $targetPath # Always add to list for dry run
+        # Special handling for WAN, Hunyuan, and SVD LoRAs to add I2V/T2V/Combination subfolders
+        if ($baseType -eq "WAN" -or $baseType -eq "Hunyuan" -or $baseType -eq "SVD") {
+            $videoLoraSubTypes = @("I2V", "T2V", "Combination") # Added Combination for LoRAs
+            foreach ($videoSubType in $videoLoraSubTypes) {
+                $videoSubPath = Join-Path -Path $baseTypeLoraPath -ChildPath $videoSubType
+                $proposedPaths += $videoSubPath # Add the I2V/T2V/Combination folder itself
+
+                # Now create the standard LoRA sub-categories within each of these video sub-types
+                foreach ($subCategory in $LoraSubCategories) {
+                    $targetPath = Join-Path -Path $videoSubPath -ChildPath $subCategory
+                    $proposedPaths += $targetPath # Always add to list for dry run
+                }
+            }
+        } else {
+            # For non-video models, create LoRA subcategories directly under the base type
+            foreach ($subCategory in $LoraSubCategories) {
+                $targetPath = Join-Path -Path $baseTypeLoraPath -ChildPath $subCategory
+                $proposedPaths += $targetPath # Always add to list for dry run
+            }
         }
     }
     # Add an 'Unsorted' folder for LoRAs that don't fit a specific category
@@ -513,7 +528,7 @@ if ($Models -or $Categories -or $CustomLoraCategories) {
             Write-Host "$model" -ForegroundColor Cyan
         }
 
-        Write-Host "`n--- Video-focused Model Types (will create I2V and T2V subfolders within Model and LoRA folders) ---" -ForegroundColor DarkYellow
+        Write-Host "`n--- Video-focused Model Types (will create I2V, T2V, and Combination subfolders within Model and LoRA folders) ---" -ForegroundColor DarkYellow
         foreach ($model in $videoFocusedModels) {
             $index = $allBaseModelTypes.IndexOf($model)
             $char = $alphabet[$index]
@@ -622,7 +637,10 @@ if ($Models -or $Categories -or $CustomLoraCategories) {
                 }
                 # Assign selected values to the variables used by Perform-FolderCreation
                 $baseModelTypesToProcess = $currentSelectionModels
-                $loraSubCategoriesToProcess = $currentSelectionLoraCategories
+                $loraSubCategoriesToProcess = $activeLoraSubCategoryNames # Use activeLoraSubCategoryNames here
+                if ($currentSelectionLoraCategories.Count -gt 0) {
+                    $loraSubCategoriesToProcess = $currentSelectionLoraCategories
+                }
 
                 # Set flags and break loop to proceed to dry run execution after the menu loop
                 $actionChosen = "DryRun"
@@ -641,7 +659,10 @@ if ($Models -or $Categories -or $CustomLoraCategories) {
 
                 # Assign selected values to the variables used by Perform-FolderCreation
                 $baseModelTypesToProcess = $currentSelectionModels
-                $loraSubCategoriesToProcess = $currentSelectionLoraCategories
+                $loraSubCategoriesToProcess = $activeLoraSubCategoryNames # Use activeLoraSubCategoryNames here
+                if ($currentSelectionLoraCategories.Count -gt 0) {
+                    $loraSubCategoriesToProcess = $currentSelectionLoraCategories
+                }
 
                 # Interactive mode's FINAL CONFIRMATION
                 $confirmExecute = Read-Host "Would you like to go ahead with creating these folders? (y/N)" # Changed to (y/N)
